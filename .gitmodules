@@ -1,0 +1,6 @@
+[submodule "Bolt"]
+	path = Bolt
+	url = https://github.com/Totomosic/Bolt
+[submodule "Boxfish"]
+	path = Boxfish
+	url = https://github.com/totomosic/Boxfish
