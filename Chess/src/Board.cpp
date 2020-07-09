@@ -8,7 +8,8 @@ namespace Chess
         OnPieceAdded(m_EventBus->GetEmitter<PieceAdded>()),
         OnPieceRemoved(m_EventBus->GetEmitter<PieceRemoved>()),
         OnPieceMoved(m_EventBus->GetEmitter<PieceMoved>()),
-        OnPiecePromoted(m_EventBus->GetEmitter<PiecePromoted>())
+        OnPiecePromoted(m_EventBus->GetEmitter<PiecePromoted>()),
+        OnNewBoard(m_EventBus->GetEmitter<NewBoard>())
     {
         m_EventBus->SetImmediateMode(true);
         ClearPieces(false);
@@ -56,6 +57,7 @@ namespace Chess
         Reset();
         m_Position = position;
         SendInitialEvents();
+        OnNewBoard.Emit({ m_Position });
     }
 
     void Board::SetPositionFromFen(const std::string& fen)
@@ -93,6 +95,12 @@ namespace Chess
         Boxfish::Square fromSquare = move.GetFromSquare();
         Boxfish::Square toSquare = move.GetToSquare();
         Boxfish::MoveFlag flags = move.GetFlags();
+        Boxfish::Team teamToMove = GetTeamToMove();
+
+        MoveInfo moveInfo;
+        moveInfo.Move = move;
+        Boxfish::ApplyMove(m_Position, move, &moveInfo.Undo);
+        m_MoveHistory.push_back(moveInfo);
 
         if ((flags & Boxfish::MOVE_PROMOTION) && (flags & Boxfish::MOVE_CAPTURE))
         {
@@ -110,7 +118,7 @@ namespace Chess
         else if (flags & Boxfish::MOVE_EN_PASSANT)
         {
             Boxfish::SquareIndex index = Boxfish::BitBoard::SquareToBitIndex(toSquare);
-            index = (Boxfish::SquareIndex)(index - Boxfish::GetForwardShift(GetTeamToMove()));
+            index = (Boxfish::SquareIndex)(index - Boxfish::GetForwardShift(teamToMove));
             RemovePiece(Boxfish::BitBoard::BitIndexToSquare(index));
         }
         else if (flags & Boxfish::MOVE_KINGSIDE_CASTLE)
@@ -123,11 +131,6 @@ namespace Chess
         }
 
         MovePiece(fromSquare, toSquare, true, animateMove);
-
-        MoveInfo moveInfo;
-        moveInfo.Move = move;
-        Boxfish::ApplyMove(m_Position, move, &moveInfo.Undo);
-        m_MoveHistory.push_back(moveInfo);
 
         GameResult result = GetGameResult();
         if (result == GameResult::Checkmate)
@@ -175,17 +178,20 @@ namespace Chess
         Boxfish::Square fromSquare = move.GetFromSquare();
         Boxfish::Square toSquare = move.GetToSquare();
         Boxfish::MoveFlag flags = move.GetFlags();
+        Boxfish::Team teamToMove = GetTeamToMove();
 
-        MovePiece(toSquare, fromSquare, false, animateMove);
+        Boxfish::UndoMove(m_Position, move, moveInfo.Undo);
+
+        MovePiece(toSquare, fromSquare, true, animateMove);
 
         if ((flags & Boxfish::MOVE_PROMOTION) && (flags & Boxfish::MOVE_CAPTURE))
         {
-            AddPiece(toSquare, move.GetCapturedPiece(), GetTeamToMove());
+            AddPiece(toSquare, move.GetCapturedPiece(), teamToMove);
             PromotePiece(fromSquare, move.GetMovingPiece());
         }
         else if (flags & Boxfish::MOVE_CAPTURE)
         {
-            AddPiece(toSquare, move.GetCapturedPiece(), GetTeamToMove());
+            AddPiece(toSquare, move.GetCapturedPiece(), teamToMove);
         }
         else if (flags & Boxfish::MOVE_PROMOTION)
         {
@@ -194,7 +200,7 @@ namespace Chess
         else if (flags & Boxfish::MOVE_EN_PASSANT)
         {
             Boxfish::SquareIndex index = Boxfish::BitBoard::SquareToBitIndex(toSquare);
-            index = (Boxfish::SquareIndex)(index + Boxfish::GetForwardShift(GetTeamToMove()));
+            index = (Boxfish::SquareIndex)(index + Boxfish::GetForwardShift(teamToMove));
             AddPiece(Boxfish::BitBoard::BitIndexToSquare(index), Boxfish::PIECE_PAWN, GetTeamToMove());
         }
         else if (flags & Boxfish::MOVE_KINGSIDE_CASTLE)
@@ -205,8 +211,6 @@ namespace Chess
         {
             MovePiece({ Boxfish::FILE_D, fromSquare.Rank }, { Boxfish::FILE_A, fromSquare.Rank }, false, animateMove);
         }
-
-        Boxfish::UndoMove(m_Position, move, moveInfo.Undo);
     }
 
     void Board::ClearPieces(bool sendEvents)

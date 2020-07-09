@@ -1,5 +1,6 @@
 #include "PieceGraphics.h"
 #include "BoardGraphics.h"
+#include "AnimationSystem.h"
 
 namespace Chess
 {
@@ -29,7 +30,10 @@ namespace Chess
 				if (e.Data.PieceId == m_PieceId)
 				{
 					m_Square = e.Data.To;
-					DrawAtSquare();
+					if (e.Data.Animate)
+						AnimateToSquare();
+					else
+						DrawAtSquare();
 				}
 			});
 
@@ -53,6 +57,22 @@ namespace Chess
 	void PieceGraphics::DrawAtSquare() const
 	{
 		DrawAtPosition(m_Graphics->SquareToScreenPosition(m_Square));
+	}
+
+	void PieceGraphics::AnimateToPosition(const Vector3f& position) const
+	{
+		Vector3f currentPosition = m_Entity.Get().GetTransform()->Position();
+		Vector3f toTarget = position - currentPosition;
+		float length = toTarget.Length();
+		float timeToReach = 0.15f;
+		float speed = length / timeToReach;
+
+		m_Entity.Get().Assign<Animator>(Animator{ position, speed });
+	}
+
+	void PieceGraphics::AnimateToSquare() const
+	{
+		AnimateToPosition(m_Graphics->SquareToScreenPosition(m_Square));
 	}
 
 	void PieceGraphics::Invalidate()

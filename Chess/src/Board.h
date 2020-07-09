@@ -39,6 +39,7 @@ namespace Chess
 		EventEmitter<PieceRemoved> OnPieceRemoved;
 		EventEmitter<PieceMoved> OnPieceMoved;
 		EventEmitter<PiecePromoted> OnPiecePromoted;
+		EventEmitter<NewBoard> OnNewBoard;
 
 	public:
 		Board();

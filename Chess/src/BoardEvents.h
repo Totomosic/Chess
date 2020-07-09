@@ -37,4 +37,10 @@ namespace Chess
 		Boxfish::Piece Promotion;
 	};
 
+	struct NewBoard
+	{
+	public:
+		Boxfish::Position Board;
+	};
+
 }

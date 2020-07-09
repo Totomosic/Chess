@@ -4,6 +4,10 @@
 #include "Board.h"
 #include "BoardGraphics.h"
 #include "BoardMarkers.h"
+#include "AnimationSystem.h"
+#include "BoardAnalyzer.h"
+
+#include "BoxfishEngine.h"
 
 namespace Chess
 {
@@ -20,6 +24,9 @@ private:
     std::unique_ptr<Chess::BoardGraphics> m_BoardGraphics;
     std::unique_ptr<Chess::BoardMarkers> m_PreviousMoveMarkers;
     std::unique_ptr<Chess::BoardMarkers> m_ValidMoveMarkers;
+    std::unique_ptr<Chess::BoardAnalyzer> m_Analyzer;
+
+    Chess::BoxfishEngine m_Engine;
 
     int m_SelectedPieceId = -1;
     Boxfish::Square m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
@@ -41,6 +48,8 @@ public:
         previousMoveLayer.SetActiveCamera(camera);
         validMovesLayer.SetActiveCamera(camera);
         piecesLayer.SetActiveCamera(camera);
+
+        piecesLayer.Systems().Add<Chess::AnimationSystem>();
 
         Chess::PiecesTexture = AssetManager::Get().LoadAsset<Texture2D>("res/Pieces.bltasset");
         Chess::PieceTextureTransforms[Boxfish::TEAM_WHITE][Boxfish::PIECE_PAWN] = Matrix3f::Translation(5.0f / 6.0f, 0.5f) * Matrix3f::Scale(1.0f / 6.0f, 0.5f, 1.0f);
@@ -64,6 +73,8 @@ public:
         m_BoardGraphics = std::make_unique<Chess::BoardGraphics>(&boardLayer, &piecesLayer, m_Board.get(), Vector2f{ boardSize, boardSize }, Vector3f{ windowSize / 2.0f, 0.0f });
         m_PreviousMoveMarkers = std::make_unique<Chess::BoardMarkers>(&previousMoveLayer, m_BoardGraphics.get());
         m_ValidMoveMarkers = std::make_unique<Chess::BoardMarkers>(&validMovesLayer, m_BoardGraphics.get());
+
+        m_Analyzer = std::make_unique<Chess::BoardAnalyzer>(m_Board.get());
 
         m_Board->SetStartingPosition();
 
@@ -184,9 +195,15 @@ public:
             Boxfish::Square square = m_BoardGraphics->ScreenPositionToSquare(Input::Get().MousePosition().xy());
             if (square != Boxfish::INVALID_SQUARE && square != m_SelectedPieceSquare)
             {
-                if (m_Board->Move(m_SelectedPieceSquare, square, true))
+                if (m_Board->Move(m_SelectedPieceSquare, square, false))
                 {
                     DeselectPiece();
+
+                    m_Engine.SetCurrentPosition(m_Board->GetPosition());
+                    m_Engine.GetBestMove(5000).ContinueWithOnMainThread([this](Boxfish::Move move)
+                        {
+                            m_Board->Move(move, true);
+                        });
                 }
             }
             if (HasSelectedPiece())

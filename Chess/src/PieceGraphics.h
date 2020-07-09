@@ -31,6 +31,9 @@ namespace Chess
 
 		void DrawAtPosition(const Vector3f& position) const;
 		void DrawAtSquare() const;
+		void AnimateToPosition(const Vector3f& position) const;
+		void AnimateToSquare() const;
+
 		void Invalidate();
 	};
 
