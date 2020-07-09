@@ -19,6 +19,7 @@ private:
     std::unique_ptr<Chess::Board> m_Board;
     std::unique_ptr<Chess::BoardGraphics> m_BoardGraphics;
     std::unique_ptr<Chess::BoardMarkers> m_PreviousMoveMarkers;
+    std::unique_ptr<Chess::BoardMarkers> m_ValidMoveMarkers;
 
     int m_SelectedPieceId = -1;
     Boxfish::Square m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
@@ -32,11 +33,13 @@ public:
         Scene& scene = SceneManager::Get().AddScene();
         Layer& boardLayer = scene.AddLayer();
         Layer& previousMoveLayer = scene.AddLayer();
+        Layer& validMovesLayer = scene.AddLayer();
         Layer& piecesLayer = scene.AddLayer();
 
         EntityHandle camera = scene.GetFactory().Camera(Matrix4f::Orthographic(0, GetWindow().Width(), 0, GetWindow().Height(), -100, 100));
         boardLayer.SetActiveCamera(camera);
         previousMoveLayer.SetActiveCamera(camera);
+        validMovesLayer.SetActiveCamera(camera);
         piecesLayer.SetActiveCamera(camera);
 
         Chess::PiecesTexture = AssetManager::Get().LoadAsset<Texture2D>("res/Pieces.bltasset");
@@ -60,6 +63,7 @@ public:
         m_Board = std::make_unique<Chess::Board>();
         m_BoardGraphics = std::make_unique<Chess::BoardGraphics>(&boardLayer, &piecesLayer, m_Board.get(), Vector2f{ boardSize, boardSize }, Vector3f{ windowSize / 2.0f, 0.0f });
         m_PreviousMoveMarkers = std::make_unique<Chess::BoardMarkers>(&previousMoveLayer, m_BoardGraphics.get());
+        m_ValidMoveMarkers = std::make_unique<Chess::BoardMarkers>(&validMovesLayer, m_BoardGraphics.get());
 
         m_Board->SetStartingPosition();
 
@@ -67,7 +71,7 @@ public:
         {
             if (e.Data.IsPlayedMove)
             {
-                Color markerColor(20, 50, 255, 200);
+                Color markerColor(0, 100, 255, 200);
                 m_PreviousMoveMarkers->Clear();
                 m_PreviousMoveMarkers->AddMarker(e.Data.From, markerColor);
                 m_PreviousMoveMarkers->AddMarker(e.Data.To, markerColor);
@@ -98,6 +102,7 @@ public:
     {
         m_BoardGraphics->Invalidate();
         m_PreviousMoveMarkers->Invalidate();
+        m_ValidMoveMarkers->Invalidate();
     }
 
     bool HasSelectedPiece() const
@@ -113,6 +118,24 @@ public:
     void DrawPieceAtSquare(int pieceId) const
     {
         m_BoardGraphics->OnDrawPieceAtSquare.Emit({ pieceId });
+    }
+
+    void DrawValidMoves(const std::vector<Boxfish::Move>& moves)
+    {
+        Color markerColor(10, 10, 10, 150);
+        Color captureColor(50, 5, 5, 150);
+        for (const Boxfish::Move& move : moves)
+        {
+            Color c = (move.GetFlags() & (Boxfish::MOVE_CAPTURE | Boxfish::MOVE_EN_PASSANT)) ? captureColor : markerColor;
+            m_ValidMoveMarkers->AddMarker(move.GetToSquare(), c, Chess::MarkerType::SmallCircle);
+        }
+    }
+
+    void DeselectPiece()
+    {
+        m_SelectedPieceId = -1;
+        m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
+        m_ValidMoveMarkers->Clear();
     }
 
     void Tick() override
@@ -147,14 +170,14 @@ public:
                     m_SelectedPieceId = pieceId;
                     m_SelectedPieceSquare = square;
                     DrawPieceAtPosition(m_SelectedPieceId, Input::Get().MousePosition());
+                    DrawValidMoves(m_Board->GetLegalMovesFor(square));
                 }
             }
         }
         if (Input::Get().MouseButtonPressed(MouseButton::Right) && HasSelectedPiece())
         {
             DrawPieceAtSquare(m_SelectedPieceId);
-            m_SelectedPieceId = -1;
-            m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
+            DeselectPiece();
         }
         if (Input::Get().MouseButtonReleased(MouseButton::Left) && HasSelectedPiece())
         {
@@ -163,15 +186,13 @@ public:
             {
                 if (m_Board->Move(m_SelectedPieceSquare, square, true))
                 {
-                    m_SelectedPieceId = -1;
-                    m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
+                    DeselectPiece();
                 }
             }
             if (HasSelectedPiece())
             {
                 DrawPieceAtSquare(m_SelectedPieceId);
-                m_SelectedPieceId = -1;
-                m_SelectedPieceSquare = Boxfish::INVALID_SQUARE;
+                DeselectPiece();
             }
         }
     }

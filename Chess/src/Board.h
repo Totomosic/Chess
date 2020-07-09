@@ -5,6 +5,14 @@
 namespace Chess
 {
 
+	enum class GameResult
+	{
+		None,
+		Checkmate,
+		Stalemate,
+		RepetitionDraw
+	};
+
 	class Board
 	{
 	public:
@@ -22,7 +30,7 @@ namespace Chess
 		int m_PieceIds[Boxfish::FILE_MAX * Boxfish::RANK_MAX];
 		int m_NextPieceId;
 
-		Boxfish::MovePool m_MovePool;
+		mutable Boxfish::MovePool m_MovePool;
 
 		std::unique_ptr<EventBus> m_EventBus;
 
@@ -39,6 +47,7 @@ namespace Chess
 		Boxfish::Team GetTeamToMove() const;
 		const std::vector<MoveInfo>& GetMoveHistory() const;
 		int GetPieceIdAt(const Boxfish::Square& square) const;
+		std::vector<Boxfish::Move> GetLegalMovesFor(const Boxfish::Square& square) const;
 
 		void SetPosition(const Boxfish::Position& position);
 		void SetPositionFromFen(const std::string& fen);
@@ -55,6 +64,7 @@ namespace Chess
 		void ClearPieces(bool sendEvents);
 		int GetNextPieceId();
 		void SendInitialEvents();
+		GameResult GetGameResult() const;
 
 		void MovePiece(const Boxfish::Square& from, const Boxfish::Square& to, bool isPlayed, bool animateMove);
 		void AddPiece(const Boxfish::Square& square, Boxfish::Piece piece, Boxfish::Team team);

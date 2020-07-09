@@ -116,17 +116,29 @@ do
             }
 
         filter "configurations:Debug"
-            defines "BLT_DEBUG"
+            defines
+            {
+                "BLT_DEBUG",
+                "BOX_DEBUG"
+            }
             runtime "Debug"
             symbols "on"
 
         filter "configurations:Release"
-            defines "BLT_RELEASE"
+            defines
+            {
+                "BLT_RELEASE",
+                "BOX_RELEASE"
+            }
             runtime "Release"
             optimize "on"
 
         filter "configurations:Dist"
-            defines "BLT_DIST"
+            defines
+            {
+                "BLT_DIST",
+                "BOX_DIST"
+            }
             runtime "Release"
             optimize "on"
 end

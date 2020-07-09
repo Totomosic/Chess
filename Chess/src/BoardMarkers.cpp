@@ -8,11 +8,18 @@ namespace Chess
 	{
 	}
 
-	void BoardMarkers::AddMarker(const Boxfish::Square& square, const Color& color)
+	void BoardMarkers::AddMarker(const Boxfish::Square& square, const Color& color, MarkerType type)
 	{
 		Vector2f size = m_Graphics->GetSquareSize();
 		Vector3f position = m_Graphics->SquareToScreenPosition(square);
-		m_Markers[Boxfish::BitBoard::SquareToBitIndex(square)] = { m_Layer->GetFactory().Rectangle(size.x, size.y, color, { position }), color };
+		if (type == MarkerType::Square)
+		{
+			m_Markers[Boxfish::BitBoard::SquareToBitIndex(square)] = { m_Layer->GetFactory().Rectangle(size.x, size.y, color, { position }), color, type };
+		}
+		else if (type == MarkerType::SmallCircle)
+		{
+			m_Markers[Boxfish::BitBoard::SquareToBitIndex(square)] = { m_Layer->GetFactory().Ellipse(size.x * 0.5f, size.y * 0.5f, color, { position }), color, type };
+		}
 	}
 
 	void BoardMarkers::RemoveMarker(const Boxfish::Square& square)
@@ -31,7 +38,7 @@ namespace Chess
 	{
 		for (auto& pair : m_Markers)
 		{
-			AddMarker(Boxfish::BitBoard::BitIndexToSquare(pair.first), pair.second.MarkerColor);
+			AddMarker(Boxfish::BitBoard::BitIndexToSquare(pair.first), pair.second.MarkerColor, pair.second.Type);
 		}
 	}
 

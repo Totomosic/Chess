@@ -30,6 +30,27 @@ namespace Chess
         return m_MoveHistory;
     }
 
+    int Board::GetPieceIdAt(const Boxfish::Square& square) const
+    {
+        return m_PieceIds[Boxfish::BitBoard::SquareToBitIndex(square)];
+    }
+
+    std::vector<Boxfish::Move> Board::GetLegalMovesFor(const Boxfish::Square& square) const
+    {
+        Boxfish::MoveList moves = m_MovePool.GetList();
+        Boxfish::MoveGenerator generator(m_Position);
+        generator.GetPseudoLegalMoves(moves);
+        generator.FilterLegalMoves(moves);
+
+        std::vector<Boxfish::Move> result;
+        for (int i = 0; i < moves.MoveCount; i++)
+        {
+            if (moves.Moves[i].GetFromSquare() == square)
+                result.push_back(moves.Moves[i]);
+        }
+        return result;
+    }
+
     void Board::SetPosition(const Boxfish::Position& position)
     {
         Reset();
@@ -107,6 +128,12 @@ namespace Chess
         moveInfo.Move = move;
         Boxfish::ApplyMove(m_Position, move, &moveInfo.Undo);
         m_MoveHistory.push_back(moveInfo);
+
+        GameResult result = GetGameResult();
+        if (result == GameResult::Checkmate)
+        {
+            std::cout << "Checkmate" << std::endl;
+        }
 
         return true;
     }
@@ -200,11 +227,6 @@ namespace Chess
         return m_NextPieceId++;
     }
 
-    int Board::GetPieceIdAt(const Boxfish::Square& square) const
-    {
-        return m_PieceIds[Boxfish::BitBoard::SquareToBitIndex(square)];
-    }
-
     void Board::SendInitialEvents()
     {
         Boxfish::Position position = m_Position;
@@ -225,6 +247,16 @@ namespace Chess
                 AddPiece(square, piece, Boxfish::TEAM_BLACK);
             }
         }
+    }
+
+    GameResult Board::GetGameResult() const
+    {
+        Boxfish::EvaluationResult evaluation = Boxfish::EvaluateDetailed(m_Position);
+        if (evaluation.IsCheckmate())
+            return GameResult::Checkmate;
+        if (evaluation.Stalemate)
+            return GameResult::Stalemate;
+        return GameResult::None;
     }
 
     void Board::MovePiece(const Boxfish::Square& from, const Boxfish::Square& to, bool isPlayed, bool animateMove)

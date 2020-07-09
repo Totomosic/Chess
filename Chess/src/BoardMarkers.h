@@ -4,6 +4,12 @@
 namespace Chess
 {
 
+	enum class MarkerType
+	{
+		Square,
+		SmallCircle
+	};
+
 	class BoardMarkers
 	{
 	private:
@@ -12,6 +18,7 @@ namespace Chess
 		public:
 			ScopedEntityHandle Entity;
 			Color MarkerColor;
+			MarkerType Type;
 		};
 
 	private:
@@ -22,7 +29,7 @@ namespace Chess
 	public:
 		BoardMarkers(Layer* layer, const BoardGraphics* graphics);
 
-		void AddMarker(const Boxfish::Square& square, const Color& color);
+		void AddMarker(const Boxfish::Square& square, const Color& color, MarkerType type = MarkerType::Square);
 		void RemoveMarker(const Boxfish::Square& square);
 		void Clear();
 		void Invalidate();
