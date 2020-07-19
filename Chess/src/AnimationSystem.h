@@ -11,6 +11,13 @@ namespace Chess
 		float Speed;
 	};
 
+	struct BarAnimator
+	{
+	public:
+		float TargetProportion;
+		float Speed;
+	};
+
 	class AnimationSystem : public System<AnimationSystem>
 	{
 	public:

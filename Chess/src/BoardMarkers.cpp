@@ -18,7 +18,7 @@ namespace Chess
 		}
 		else if (type == MarkerType::SmallCircle)
 		{
-			m_Markers[Boxfish::BitBoard::SquareToBitIndex(square)] = { m_Layer->GetFactory().Ellipse(size.x * 0.5f, size.y * 0.5f, color, { position }), color, type };
+			m_Markers[Boxfish::BitBoard::SquareToBitIndex(square)] = { m_Layer->GetFactory().Ellipse(size.x * 0.3f, size.y * 0.3f, color, { position }), color, type };
 		}
 	}
 
