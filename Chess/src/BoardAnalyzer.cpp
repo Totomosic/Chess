@@ -5,7 +5,7 @@ namespace Chess
 {
 
 	BoardAnalyzer::BoardAnalyzer(Layer* uiLayer, BoardGraphics* board)
-		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0),
+		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
 		m_MovedListener(), m_BoardListener(), m_Flipped(false), m_AnalysisBar()
 	{
 		Invalidate();
@@ -34,6 +34,7 @@ namespace Chess
 				{
 					Boxfish::Position position = m_PonderPosition;
 					m_Search.SetCurrentPosition(position);
+					m_Search.GetHistory().Push(position);
 					m_Search.Ponder([position, analyzer](Boxfish::SearchResult result)
 						{
 							Boxfish::Centipawns score = result.Score;
@@ -51,6 +52,7 @@ namespace Chess
 
 	BoardAnalyzer::~BoardAnalyzer()
 	{
+		m_Running = false;
 		m_Stop = true;
 		m_Search.Stop();
 		m_SearchThread.join();
@@ -87,6 +89,14 @@ namespace Chess
 			scale = 1.0f - scale;
 		m_AnalysisBar.Get().Assign<BarAnimator>(BarAnimator{ scale, 0.3f });
 		m_CurrentScore = score;
+	}
+
+	void BoardAnalyzer::Enable()
+	{
+	}
+
+	void BoardAnalyzer::Disable()
+	{
 	}
 
 	float BoardAnalyzer::CalculateWhiteProportion(int scoreCentipawns) const

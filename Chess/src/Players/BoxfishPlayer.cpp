@@ -27,21 +27,24 @@ namespace Chess
     void BoxfishPlayer::PlayNextMove(Board* board) const
     {
         m_Search.SetCurrentPosition(board->GetPosition());
+        m_Search.GetHistory().Push(board->GetPosition());
         CancelMove();
         m_Running = true;
-        m_SearchThread = std::thread([this, board]()
+        const BoxfishPlayer* playerPtr = this;
+        m_SearchThread = std::thread([playerPtr, board]()
             {
                 Boxfish::SearchLimits limits;
                 limits.Milliseconds = 3000;
-                m_Search.SetLimits(limits);
-                Boxfish::Move bestMove = m_Search.Go(Boxfish::MAX_PLY);
-                if (m_Running)
+                playerPtr->m_Search.SetLimits(limits);
+                Boxfish::Move bestMove = playerPtr->m_Search.Go(Boxfish::MAX_PLY);
+                if (playerPtr->m_Running)
                 {
-                    TaskManager::Get().RunOnMainThread([board, bestMove]()
+                    TaskManager::Get().RunOnMainThread([playerPtr, board, bestMove]()
                         {
                             board->Move(bestMove);
+                            playerPtr->m_Search.GetHistory().Push(board->GetPosition());
                         });
-                    m_Running = false;
+                    playerPtr->m_Running = false;
                 }
             });
     }

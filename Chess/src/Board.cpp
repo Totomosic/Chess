@@ -4,7 +4,7 @@ namespace Chess
 {
 
     Board::Board()
-        : m_Position(), m_MoveHistory(), m_MovePointer(0), m_PieceIds(), m_NextPieceId(0), m_MovePool(Boxfish::MAX_MOVES * 1), m_EventBus(std::make_unique<EventBus>()),
+        : m_StartingPosition(), m_Position(), m_MoveHistory(), m_MovePointer(0), m_PieceIds(), m_NextPieceId(0), m_MovePool(Boxfish::MAX_MOVES * 1), m_EventBus(std::make_unique<EventBus>()), m_Playable(true),
         OnPieceAdded(m_EventBus->GetEmitter<PieceAdded>()),
         OnPieceRemoved(m_EventBus->GetEmitter<PieceRemoved>()),
         OnPieceMoved(m_EventBus->GetEmitter<PieceMoved>()),
@@ -52,10 +52,21 @@ namespace Chess
         return result;
     }
 
+    bool Board::IsPlayable() const
+    {
+        return m_Playable;
+    }
+
+    void Board::SetPlayable(bool isPlayable)
+    {
+        m_Playable = isPlayable;
+    }
+
     void Board::SetPosition(const Boxfish::Position& position)
     {
         Reset();
         m_Position = position;
+        m_StartingPosition = position;
         SendInitialEvents();
         OnNewBoard.Emit({ m_Position });
     }
@@ -160,7 +171,21 @@ namespace Chess
             UndoMove(move, animateMove);
             return move.Move;
         }
-        return Boxfish::Move::Null();
+        return Boxfish::MOVE_NONE;
+    }
+
+    std::string Board::GetUCIString() const
+    {
+        std::string result = "position fen " + Boxfish::GetFENFromPosition(m_StartingPosition);
+        if (m_MoveHistory.size() > 0)
+        {
+            result += " moves";
+            for (const MoveInfo& move : m_MoveHistory)
+            {
+                result += " " + Boxfish::UCI::FormatMove(move.Move);
+            }
+        }
+        return result;
     }
 
     void Board::Reset()

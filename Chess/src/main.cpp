@@ -2,6 +2,7 @@
 #include "Boxfish.h"
 #include "ChessGame.h"
 #include "Players/UCIEnginePlayer.h"
+#include "Players/CPWEnginePlayer.h"
 #include "AnimationSystem.h"
 #include "ChessServerConnection.h"
 
@@ -79,11 +80,12 @@ public:
         m_ChessGameSceneData.UILayer = &uiLayer;
 
         m_ChessGame = std::make_unique<Chess::ChessGame>(&GetWindow(), m_ChessGameSceneData);
-        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_WHITE, Chess::UCILimits{ -1, 1000 }, std::vector<std::string>{ "Stockfish.exe" });
-        m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_WHITE, 512 * 1024 * 1024);
-        //m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_BLACK, 512 * 1024 * 1024);
-        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ 4, -1 },std::vector<std::string>{ "Boxfish-Cli-Old.exe" });
-        m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 1000 }, std::vector<std::string>{ "bash", "-c", "./shallowblue" });
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 1000 }, std::vector<std::string>{ "Stockfish.exe" });
+        m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_WHITE, 256 * 1024 * 1024);
+        //m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_BLACK, 256 * 1024 * 1024);
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_WHITE, Chess::UCILimits{ 4, -1 }, std::vector<std::string>{ "Boxfish-Cli-Old.exe" });
+        m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./shallowblue" });
+        //m_ChessGame->AddPlayer<Chess::CPWEnginePlayer>(Boxfish::TEAM_BLACK, std::vector<std::string>{ "cpw1.1.exe" });
         m_ChessGame->Start();
     }
 

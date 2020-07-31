@@ -29,7 +29,6 @@ namespace Chess
 	{
 		SceneManager::Get().SetCurrentScenePtr(m_SceneData.Scene);
 		m_Board.SetStartingPosition();
-		// m_Board.SetPositionFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R1BQKBNR w KQkq - 0 1");
 	}
 
 	void ChessGame::Update()
@@ -46,13 +45,17 @@ namespace Chess
 		}
 		if (Input::Get().KeyPressed(Keycode::F))
 		{
-			std::cout << m_Board.GetPosition() << std::endl;
-			std::cout << "Fen: " << Boxfish::GetFENFromPosition(m_Board.GetPosition()) << std::endl;
-			std::cout << "Hash: " << std::hex << m_Board.GetPosition().Hash.Hash << std::dec << std::endl;
-
 			m_BoardGraphics.Flip();
 			m_Analyzer.Flip();
 			UpdateAllGraphics();
+		}
+		if (Input::Get().KeyPressed(Keycode::I))
+		{
+			std::cout << m_Board.GetPosition() << std::endl;
+			std::cout << "Fen: " << Boxfish::GetFENFromPosition(m_Board.GetPosition()) << std::endl;
+			std::cout << "Hash: " << std::hex << m_Board.GetPosition().Hash.Hash << std::dec << std::endl;
+			std::cout << std::endl;
+			std::cout << m_Board.GetUCIString() << std::endl;
 		}
 		if (Input::Get().MouseButtonPressed(MouseButton::Left) && !HasSelectedPiece())
 		{

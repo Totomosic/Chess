@@ -37,13 +37,14 @@ namespace Chess
 
 	void UCIEnginePlayer::CancelMove() const
 	{
+		m_Process.SendCommand("stop");
 		m_CurrentBoard = nullptr;
 	}
 
 	void UCIEnginePlayer::PlayNextMove(Board* board) const
 	{
 		m_CurrentBoard = board;
-		m_Process.SendCommand("position fen " + Boxfish::GetFENFromPosition(board->GetPosition()));
+		m_Process.SendCommand(board->GetUCIString());
 		if (m_Limits.MoveTime > 0)
 			m_Process.SendCommand("go movetime " + std::to_string(m_Limits.MoveTime));
 		else

@@ -8,14 +8,15 @@ namespace Chess
 	{
 		m_MoveListener = m_Board->OnPieceMoved.AddScopedEventListener([this](Event<PieceMoved>& e)
 			{
-				if (e.Data.IsPlayedMove)
+				if (e.Data.IsPlayedMove && m_Board->IsPlayable())
 				{
 					GetNextMove(m_Board->GetPosition());
 				}
 			});
 		m_BoardListener = m_Board->OnNewBoard.AddScopedEventListener([this](Event<NewBoard>& e)
 			{
-				GetNextMove(e.Data.Board);
+				if (m_Board->IsPlayable())
+					GetNextMove(e.Data.Board);
 			});
 	}
 

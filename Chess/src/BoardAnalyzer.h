@@ -18,6 +18,7 @@ namespace Chess
 		std::atomic<bool> m_Stop;
 		std::thread m_SearchThread;
 		int m_CurrentScore;
+		bool m_Running;
 
 		ScopedEventListener m_MovedListener;
 		ScopedEventListener m_BoardListener;
@@ -32,6 +33,9 @@ namespace Chess
 		void Flip();
 		void Invalidate();
 		void UpdateScore(int score);
+
+		void Enable();
+		void Disable();
 
 	private:
 		float CalculateWhiteProportion(int scoreCentipawns) const;

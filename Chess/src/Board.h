@@ -24,11 +24,13 @@ namespace Chess
 		};
 
 	private:
+		Boxfish::Position m_StartingPosition;
 		Boxfish::Position m_Position;
 		std::vector<MoveInfo> m_MoveHistory;
 		int m_MovePointer;
 		int m_PieceIds[Boxfish::FILE_MAX * Boxfish::RANK_MAX];
 		int m_NextPieceId;
+		bool m_Playable;
 
 		mutable Boxfish::MovePool m_MovePool;
 
@@ -49,7 +51,9 @@ namespace Chess
 		const std::vector<MoveInfo>& GetMoveHistory() const;
 		int GetPieceIdAt(const Boxfish::Square& square) const;
 		std::vector<Boxfish::Move> GetLegalMovesFor(const Boxfish::Square& square) const;
+		bool IsPlayable() const;
 
+		void SetPlayable(bool isPlayable);
 		void SetPosition(const Boxfish::Position& position);
 		void SetPositionFromFen(const std::string& fen);
 		void SetStartingPosition();
@@ -58,6 +62,7 @@ namespace Chess
 		bool Move(const Boxfish::Square& from, const Boxfish::Square& to, bool animateMove = true);
 		
 		Boxfish::Move PopMove(bool animateMove = true);
+		std::string GetUCIString() const;
 
 	private:
 		void Reset();
