@@ -34,7 +34,7 @@ namespace Chess
         m_SearchThread = std::thread([playerPtr, board]()
             {
                 Boxfish::SearchLimits limits;
-                limits.Milliseconds = 3000;
+                limits.Milliseconds = 500;
                 playerPtr->m_Search.SetLimits(limits);
                 Boxfish::Move bestMove = playerPtr->m_Search.Go(Boxfish::MAX_PLY);
                 if (playerPtr->m_Running)
