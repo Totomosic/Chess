@@ -21,6 +21,7 @@ include (BoltDir .. "BoltInclude.lua")
 group("Boxfish")
 include (BoxfishDir .. "Include.lua")
 include (BoxfishDir .. "Boxfish-Cli")
+include (BoxfishDir .. "Boxfish-Test")
 
 group ("Chess")
 include ("Chess")

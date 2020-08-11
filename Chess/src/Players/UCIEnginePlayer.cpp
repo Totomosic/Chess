@@ -19,6 +19,8 @@ namespace Chess
 						if (message.substr(0, token.size()) == token)
 						{
 							std::string move = message.substr(token.size());
+							while (move.back() == '\r')
+								move.pop_back();
 							Boxfish::Move mv = Boxfish::CreateMoveFromString(m_CurrentBoard->GetPosition(), move);
 							m_CurrentBoard->Move(mv);
 						}

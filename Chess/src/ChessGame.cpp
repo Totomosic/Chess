@@ -5,7 +5,7 @@ namespace Chess
 
 	ChessGame::ChessGame(Window* window, const SceneData& sceneData)
 		: m_Window(window), m_SceneData(sceneData), m_Camera(), m_Background(), m_Board(), m_BoardGraphics(sceneData.BoardLayer, sceneData.PiecesLayer, &m_Board, { 100, 100 }, { 0, 0, 0 }),
-		m_PreviousMoveMarkers(sceneData.PreviousMoveLayer, &m_BoardGraphics), m_ValidMoveMarkers(sceneData.ValidMovesLayer, &m_BoardGraphics), m_Analyzer(sceneData.UILayer, &m_BoardGraphics),
+		m_PreviousMoveMarkers(sceneData.PreviousMoveLayer, &m_BoardGraphics), m_ValidMoveMarkers(sceneData.ValidMovesLayer, &m_BoardGraphics), /*m_Analyzer(sceneData.UILayer, &m_BoardGraphics),*/
 		m_Players(&m_Board), m_WindowResizeListener(), m_MouseMoveListener(), m_SelectedPieceId(-1), m_SelectedPieceSquare(Boxfish::INVALID_SQUARE)
 	{
 		m_Camera = m_SceneData.Scene->GetFactory().Camera(Matrix4f::Orthographic(0, m_Window->Width(), 0, m_Window->Height(), -100, 100));
@@ -46,7 +46,7 @@ namespace Chess
 		if (Input::Get().KeyPressed(Keycode::F))
 		{
 			m_BoardGraphics.Flip();
-			m_Analyzer.Flip();
+			//m_Analyzer.Flip();
 			UpdateAllGraphics();
 		}
 		if (Input::Get().KeyPressed(Keycode::I))
@@ -138,7 +138,7 @@ namespace Chess
 		m_BoardGraphics.Invalidate();
 		m_PreviousMoveMarkers.Invalidate();
 		m_ValidMoveMarkers.Invalidate();
-		m_Analyzer.Invalidate();
+		//m_Analyzer.Invalidate();
 
 		m_Background = m_SceneData.BoardLayer->GetFactory().Rectangle(m_Window->Width(), m_Window->Height(), Color(120, 120, 120), Transform({ m_Window->Width() / 2.0f, m_Window->Height() / 2.0f, -5.0f }));
 	}

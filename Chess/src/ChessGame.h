@@ -34,7 +34,7 @@ namespace Chess
 		BoardGraphics m_BoardGraphics;
 		BoardMarkers m_PreviousMoveMarkers;
 		BoardMarkers m_ValidMoveMarkers;
-		BoardAnalyzer m_Analyzer;
+		//BoardAnalyzer m_Analyzer;
 
 		PlayerManager m_Players;
 

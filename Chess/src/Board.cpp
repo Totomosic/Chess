@@ -99,7 +99,7 @@ namespace Chess
         }
         if (!isLegal)
         {
-            BOX_INFO("Move {} is not legal", Boxfish::FormatMove(move));
+            BOX_INFO("Move {} is not legal", Boxfish::UCI::FormatMove(move));
             return false;
         }
 
@@ -281,10 +281,6 @@ namespace Chess
     GameResult Board::GetGameResult() const
     {
         Boxfish::EvaluationResult evaluation = Boxfish::EvaluateDetailed(m_Position);
-        if (evaluation.IsCheckmate())
-            return GameResult::Checkmate;
-        if (evaluation.Stalemate)
-            return GameResult::Stalemate;
         return GameResult::None;
     }
 
