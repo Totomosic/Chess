@@ -5,7 +5,7 @@ namespace Chess
 
 	ChessGame::ChessGame(Window* window, const SceneData& sceneData)
 		: m_Window(window), m_SceneData(sceneData), m_Camera(), m_Background(), m_Board(), m_BoardGraphics(sceneData.BoardLayer, sceneData.PiecesLayer, &m_Board, { 100, 100 }, { 0, 0, 0 }),
-		m_PreviousMoveMarkers(sceneData.PreviousMoveLayer, &m_BoardGraphics), m_ValidMoveMarkers(sceneData.ValidMovesLayer, &m_BoardGraphics), /*m_Analyzer(sceneData.UILayer, &m_BoardGraphics),*/
+		m_PreviousMoveMarkers(sceneData.PreviousMoveLayer, &m_BoardGraphics), m_ValidMoveMarkers(sceneData.ValidMovesLayer, &m_BoardGraphics), m_Analyzer(nullptr),
 		m_Players(&m_Board), m_WindowResizeListener(), m_MouseMoveListener(), m_SelectedPieceId(-1), m_SelectedPieceSquare(Boxfish::INVALID_SQUARE)
 	{
 		m_Camera = m_SceneData.Scene->GetFactory().Camera(Matrix4f::Orthographic(0, m_Window->Width(), 0, m_Window->Height(), -100, 100));
@@ -20,6 +20,8 @@ namespace Chess
 
 		m_BoardGraphics.SetSize({ boardSize, boardSize });
 		m_BoardGraphics.SetPosition({ m_Window->Width() / 2.0f, m_Window->Height() / 2.0f, 0.0f });
+
+		m_Analyzer = std::make_unique<BoardAnalyzer>(sceneData.UILayer, &m_BoardGraphics);
 
 		UpdateAllGraphics();
 		SetupEventListeners();
@@ -46,7 +48,8 @@ namespace Chess
 		if (Input::Get().KeyPressed(Keycode::F))
 		{
 			m_BoardGraphics.Flip();
-			//m_Analyzer.Flip();
+			if (m_Analyzer)
+				m_Analyzer->Flip();
 			UpdateAllGraphics();
 		}
 		if (Input::Get().KeyPressed(Keycode::I))
@@ -56,6 +59,10 @@ namespace Chess
 			std::cout << "Hash: " << std::hex << m_Board.GetPosition().Hash.Hash << std::dec << std::endl;
 			std::cout << std::endl;
 			std::cout << m_Board.GetUCIString() << std::endl;
+		}
+		if (Input::Get().KeyPressed(Keycode::E))
+		{
+			std::cout << Boxfish::FormatEvaluation(Boxfish::EvaluateDetailed(m_Board.GetPosition())) << std::endl;
 		}
 		if (Input::Get().MouseButtonPressed(MouseButton::Left) && !HasSelectedPiece())
 		{
@@ -138,7 +145,8 @@ namespace Chess
 		m_BoardGraphics.Invalidate();
 		m_PreviousMoveMarkers.Invalidate();
 		m_ValidMoveMarkers.Invalidate();
-		//m_Analyzer.Invalidate();
+		if (m_Analyzer)
+			m_Analyzer->Invalidate();
 
 		m_Background = m_SceneData.BoardLayer->GetFactory().Rectangle(m_Window->Width(), m_Window->Height(), Color(120, 120, 120), Transform({ m_Window->Width() / 2.0f, m_Window->Height() / 2.0f, -5.0f }));
 	}

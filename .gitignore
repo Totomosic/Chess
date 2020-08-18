@@ -37,3 +37,7 @@ Makefile
 *.xcodeproj/
 *.xcworkspace/
 *.ini
+Boxfish-Cli-1.0.exe
+Boxfish-Cli-Old.exe
+cpw1.1.exe
+shallowblue

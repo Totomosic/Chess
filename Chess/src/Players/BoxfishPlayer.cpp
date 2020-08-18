@@ -6,6 +6,9 @@ namespace Chess
     BoxfishPlayer::BoxfishPlayer(Boxfish::Team team, size_t ttSize) : Player(team),
         m_Search(ttSize, true), m_Running(false), m_SearchThread()
     {
+        Boxfish::BoxfishSettings settings;
+        settings.SkillLevel = 20;
+        m_Search.SetSettings(settings);
     }
 
     BoxfishPlayer::~BoxfishPlayer()
@@ -34,7 +37,7 @@ namespace Chess
         m_SearchThread = std::thread([playerPtr, board]()
             {
                 Boxfish::SearchLimits limits;
-                limits.Milliseconds = 500;
+                limits.Milliseconds = 3000;
                 playerPtr->m_Search.SetLimits(limits);
                 Boxfish::Move bestMove = playerPtr->m_Search.Go(Boxfish::MAX_PLY);
                 if (playerPtr->m_Running)
