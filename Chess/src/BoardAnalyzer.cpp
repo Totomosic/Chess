@@ -33,9 +33,8 @@ namespace Chess
 				while (!m_Stop)
 				{
 					Boxfish::Position position = m_PonderPosition;
-					m_Search.SetCurrentPosition(position);
-					m_Search.GetHistory().Push(position);
-					m_Search.Ponder([position, analyzer](Boxfish::SearchResult result)
+					m_Search.PushPosition(position);
+					m_Search.Ponder(position, [position, analyzer](Boxfish::SearchResult result)
 						{
 							Boxfish::Centipawns score = result.Score;
 							if (position.TeamToPlay == Boxfish::TEAM_BLACK)

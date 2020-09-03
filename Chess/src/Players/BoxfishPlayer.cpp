@@ -29,8 +29,7 @@ namespace Chess
 
     void BoxfishPlayer::PlayNextMove(Board* board) const
     {
-        m_Search.SetCurrentPosition(board->GetPosition());
-        m_Search.GetHistory().Push(board->GetPosition());
+        m_Search.PushPosition(board->GetPosition());
         CancelMove();
         m_Running = true;
         const BoxfishPlayer* playerPtr = this;
@@ -38,14 +37,13 @@ namespace Chess
             {
                 Boxfish::SearchLimits limits;
                 limits.Milliseconds = 3000;
-                playerPtr->m_Search.SetLimits(limits);
-                Boxfish::Move bestMove = playerPtr->m_Search.Go(Boxfish::MAX_PLY);
+                Boxfish::Move bestMove = playerPtr->m_Search.SearchBestMove(board->GetPosition(), limits);
                 if (playerPtr->m_Running)
                 {
                     TaskManager::Get().RunOnMainThread([playerPtr, board, bestMove]()
                         {
                             board->Move(bestMove);
-                            playerPtr->m_Search.GetHistory().Push(board->GetPosition());
+                            playerPtr->m_Search.PushPosition(board->GetPosition());
                         });
                     playerPtr->m_Running = false;
                 }

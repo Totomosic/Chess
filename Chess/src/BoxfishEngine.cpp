@@ -8,26 +8,14 @@ namespace Chess
     {
     }
 
-    Task<Boxfish::Move> BoxfishEngine::GetBestMove(int milliseconds)
+    Task<Boxfish::Move> BoxfishEngine::GetBestMove(const Boxfish::Position& position, int milliseconds)
     {
-        return TaskManager::Get().Run([this, milliseconds]()
+        return TaskManager::Get().Run([this, milliseconds, position]()
             {
                 Boxfish::SearchLimits limits;
                 limits.Milliseconds = milliseconds;
-                m_Search.SetLimits(limits);
-                return m_Search.Go(50);
+                return m_Search.SearchBestMove(position, limits);
             });
-    }
-
-    void BoxfishEngine::SetCurrentPosition(const Boxfish::Position& position)
-    {
-        m_Search.SetCurrentPosition(position);
-        m_Search.GetHistory().Push(position);
-    }
-
-    void BoxfishEngine::Reset()
-    {
-        m_Search.Reset();
     }
 
 }

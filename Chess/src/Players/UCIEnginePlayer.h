@@ -20,7 +20,7 @@ namespace Chess
 		UCILimits m_Limits;
 
 	public:
-		UCIEnginePlayer(Boxfish::Team team, const UCILimits& limits, const std::vector<std::string>& exectuableArgs);
+		UCIEnginePlayer(Boxfish::Team team, const UCILimits& limits, const std::vector<std::string>& executableArgs);
 		~UCIEnginePlayer() override;
 
 		virtual void CancelMove() const override;
