@@ -5,7 +5,7 @@ namespace Chess
 {
 
 	BoardAnalyzer::BoardAnalyzer(Layer* uiLayer, BoardGraphics* board)
-		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
+		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, true), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
 		m_MovedListener(), m_BoardListener(), m_Flipped(false), m_AnalysisBar()
 	{
 		Invalidate();
@@ -38,7 +38,7 @@ namespace Chess
 						{
 							Boxfish::Centipawns score = result.Score;
 							if (position.TeamToPlay == Boxfish::TEAM_BLACK)
-								score *= -1;
+								score = -score;
 							TaskManager::Get().RunOnMainThread([analyzer, score]()
 								{
 									analyzer->UpdateScore(score);
