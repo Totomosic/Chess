@@ -5,7 +5,7 @@ namespace Chess
 {
 
 	BoardAnalyzer::BoardAnalyzer(Layer* uiLayer, BoardGraphics* board)
-		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, true), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
+		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
 		m_MovedListener(), m_BoardListener(), m_Flipped(false), m_AnalysisBar()
 	{
 		Invalidate();

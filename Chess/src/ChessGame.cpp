@@ -157,7 +157,7 @@ namespace Chess
 		{
 			if (e.Data.IsPlayedMove)
 			{
-				Color markerColor(0, 100, 255, 200);
+				Color markerColor(30, 144, 255, 200);
 				m_PreviousMoveMarkers.Clear();
 				m_PreviousMoveMarkers.AddMarker(e.Data.From, markerColor);
 				m_PreviousMoveMarkers.AddMarker(e.Data.To, markerColor);

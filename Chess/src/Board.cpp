@@ -176,7 +176,7 @@ namespace Chess
 
     std::string Board::GetUCIString() const
     {
-        std::string result = "position fen " + Boxfish::GetFENFromPosition(m_StartingPosition);
+        std::string result = "position startpos";//fen " + Boxfish::GetFENFromPosition(m_StartingPosition);
         if (m_MoveHistory.size() > 0)
         {
             result += " moves";

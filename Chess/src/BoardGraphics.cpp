@@ -98,7 +98,7 @@ namespace Chess
 	void BoardGraphics::Invalidate()
 	{
 		Color lightSquareColor(232, 235, 239);
-		Color darkSquareColor(20, 50, 100);
+		Color darkSquareColor(70, 130, 180);
 		Vector2f squareSize = GetSquareSize();
 
 		Model boardModel;
