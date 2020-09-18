@@ -5,7 +5,7 @@ namespace Chess
 {
 
 	BoardAnalyzer::BoardAnalyzer(Layer* uiLayer, BoardGraphics* board)
-		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true),
+		: m_Layer(uiLayer), m_BoardGraphics(board), m_Search(50 * 1024 * 1024, false), m_PonderPosition(), m_SearchMutex(), m_Stop(false), m_SearchThread(), m_CurrentScore(0), m_Running(true), m_Reset(false),
 		m_MovedListener(), m_BoardListener(), m_Flipped(false), m_AnalysisBar()
 	{
 		Invalidate();
@@ -32,11 +32,16 @@ namespace Chess
 			{
 				while (!m_Stop)
 				{
+					if (m_Reset)
+					{
+						m_Search.Reset();
+						m_Reset = false;
+					}
 					Boxfish::Position position = m_PonderPosition;
 					m_Search.PushPosition(position);
 					m_Search.Ponder(position, [position, analyzer](Boxfish::SearchResult result)
 						{
-							Boxfish::Centipawns score = result.Score;
+							Boxfish::ValueType score = result.Score;
 							if (position.TeamToPlay == Boxfish::TEAM_BLACK)
 								score = -score;
 							TaskManager::Get().RunOnMainThread([analyzer, score]()
@@ -88,6 +93,12 @@ namespace Chess
 			scale = 1.0f - scale;
 		m_AnalysisBar.Get().Assign<BarAnimator>(BarAnimator{ scale, 0.3f });
 		m_CurrentScore = score;
+	}
+
+	void BoardAnalyzer::Reset()
+	{
+		m_Reset = true;
+		m_Search.Stop();
 	}
 
 	void BoardAnalyzer::Enable()

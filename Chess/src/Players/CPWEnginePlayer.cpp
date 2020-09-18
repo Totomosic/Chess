@@ -36,7 +36,7 @@ namespace Chess
 			}
 		});
 
-		m_Process.SendCommand("st 3");
+		m_Process.SendCommand("st 1");
 		m_Process.SendCommand("new");
 	}
 

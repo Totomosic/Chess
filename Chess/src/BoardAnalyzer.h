@@ -19,6 +19,7 @@ namespace Chess
 		std::thread m_SearchThread;
 		int m_CurrentScore;
 		bool m_Running;
+		std::atomic<bool> m_Reset;
 
 		ScopedEventListener m_MovedListener;
 		ScopedEventListener m_BoardListener;
@@ -33,6 +34,7 @@ namespace Chess
 		void Flip();
 		void Invalidate();
 		void UpdateScore(int score);
+		void Reset();
 
 		void Enable();
 		void Disable();

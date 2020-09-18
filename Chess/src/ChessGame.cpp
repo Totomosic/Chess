@@ -21,7 +21,7 @@ namespace Chess
 		m_BoardGraphics.SetSize({ boardSize, boardSize });
 		m_BoardGraphics.SetPosition({ m_Window->Width() / 2.0f, m_Window->Height() / 2.0f, 0.0f });
 
-		//m_Analyzer = std::make_unique<BoardAnalyzer>(sceneData.UILayer, &m_BoardGraphics);
+		m_Analyzer = std::make_unique<BoardAnalyzer>(sceneData.UILayer, &m_BoardGraphics);
 
 		UpdateAllGraphics();
 		SetupEventListeners();
@@ -43,6 +43,8 @@ namespace Chess
 
 		if (Input::Get().KeyPressed(Keycode::Left))
 		{
+			if (m_Analyzer)
+				m_Analyzer->Reset();
 			m_Board.PopMove();
 		}
 		if (Input::Get().KeyPressed(Keycode::F))
