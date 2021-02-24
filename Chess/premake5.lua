@@ -13,6 +13,7 @@ do
         language "C++"
         cppdialect "C++17"
         staticruntime "on"
+        targetname "ChessGUI"
 
         targetdir (BuildDir)
         objdir (ObjDir)

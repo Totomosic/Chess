@@ -10,6 +10,7 @@ namespace Chess
 	public:
 		int Depth = -1;
 		int MoveTime = -1;
+		int Nodes = -1;
 	};
 
 	class UCIEnginePlayer : public Player
@@ -23,6 +24,7 @@ namespace Chess
 		UCIEnginePlayer(Boxfish::Team team, const UCILimits& limits, const std::vector<std::string>& executableArgs);
 		~UCIEnginePlayer() override;
 
+		void SendCommand(const std::string& command) const;
 		virtual void CancelMove() const override;
 		virtual void PlayNextMove(Board* board) const override;
 	};

@@ -16,6 +16,11 @@ namespace Chess
         CancelMove();
     }
 
+    void BoxfishPlayer::SetOpeningBook(const Boxfish::OpeningBook* book) const
+    {
+        m_Search.SetOpeningBook(book);
+    }
+
     void BoxfishPlayer::CancelMove() const
     {
         if (m_Running)

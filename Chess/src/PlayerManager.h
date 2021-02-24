@@ -20,12 +20,12 @@ namespace Chess
 		PlayerManager(Board* board);
 		~PlayerManager();
 
-		void AddPlayer(std::unique_ptr<Player>&& player);
+		Player& AddPlayer(std::unique_ptr<Player>&& player);
 
 		template<typename T, typename ... Args>
-		void AddPlayer(Args&& ... args)
+		T& AddPlayer(Args&& ... args)
 		{
-			return AddPlayer(std::make_unique<T>(std::forward<Args>(args)...));
+			return (T&)AddPlayer(std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
 	private:

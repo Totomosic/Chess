@@ -21,31 +21,12 @@ private:
     std::unique_ptr<Chess::ChessGame> m_ChessGame;
     bool m_ShouldExit = false;
 
+    Boxfish::OpeningBook m_Book;
+
 public:
     void Init() override
     {
         Boxfish::Init();
-
-        Scene& titleScene = SceneManager::Get().AddScene();
-        EntityHandle titleCamera = titleScene.GetFactory().Camera(Matrix4f::Orthographic(0, GetWindow().Width(), 0, GetWindow().Height(), -100, 100));
-        Layer& titleLayer = titleScene.AddLayer();
-        titleLayer.SetActiveCamera(titleCamera);
-
-        UIRectangle& button = titleLayer.GetUI().GetRoot().CreateRectangle(300, 100, Color::Red, Transform({ GetWindow().Width() / 2.0f, GetWindow().Height() / 2.0f, 0.0f }));
-        button.CreateText("Connect", Color::Black);
-        button.Events().OnClick().AddEventListener([this](Event<UI<MouseClickEvent>>& e)
-        {
-            Chess::ChessServerConnection connection(SocketAddress("localhost", 9000), "Totomosic");
-            int gameId;
-            if (connection.StartJoinableGame(&gameId))
-            {
-                for (const Chess::JoinableGame& game : connection.ListJoinableGames())
-                {
-                    BLT_INFO(game.HostUsername);
-                }
-                connection.FinishGame(gameId);
-            }
-        });
 
         Scene& chessScene = SceneManager::Get().AddScene();
         Layer& boardLayer = chessScene.AddLayer();
@@ -79,13 +60,24 @@ public:
         m_ChessGameSceneData.PiecesLayer = &piecesLayer;
         m_ChessGameSceneData.UILayer = &uiLayer;
 
+        m_Book.AppendFromFile("Boxfish.book");
         m_ChessGame = std::make_unique<Chess::ChessGame>(&GetWindow(), m_ChessGameSceneData);
-        m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_BLACK, 50 * 1024 * 1024);
-        //m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_BLACK, 50 * 1024 * 1024);
+        //Chess::BoxfishPlayer& boxfish = m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_BLACK, 128 * 1024 * 1024);
+        //boxfish.SetOpeningBook(&m_Book);
+        //m_ChessGame->AddPlayer<Chess::BoxfishPlayer>(Boxfish::TEAM_WHITE, 50 * 1024 * 1024);
         //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ 4, -1 }, std::vector<std::string>{ "Boxfish-Cli-Old.exe" });
         //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./shallowblue" });
         //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "Boxfish-Cli-1.0.exe" });
-        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./MisterQueen" });
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_WHITE, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./MisterQueen" });
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "Boxfish-Cli-1.1.exe" });
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_WHITE, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./xiphos-sse" });
+        m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_WHITE, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "./cinnamon" });
+        Chess::UCIEnginePlayer& storm = m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "C:/Users/jorda/Desktop/dev/C++/Storm/bin/Dist-windows-x86_64/Storm-Cli/Storm-Cli.exe" });
+        // storm.SendCommand("setoption name book value Boxfish.book");
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 3000 }, std::vector<std::string>{ "bash", "-c", "/mnt/c/users/jorda/desktop/dev/C++/Storm/bin/Dist-linux-x86_64/Storm-Cli/Storm-Cli" });
+
+        // Maia Chess weights file
+        //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, -1, 1 }, std::vector<std::string>{ "lc0/lc0.exe" });
         //m_ChessGame->AddPlayer<Chess::CPWEnginePlayer>(Boxfish::TEAM_BLACK, std::vector<std::string>{ "cpw1.1.exe" });
         //m_ChessGame->AddPlayer<Chess::UCIEnginePlayer>(Boxfish::TEAM_BLACK, Chess::UCILimits{ -1, 100 }, std::vector<std::string>{ "Stockfish.exe" });
         m_ChessGame->Start();

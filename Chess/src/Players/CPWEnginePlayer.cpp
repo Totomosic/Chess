@@ -26,7 +26,7 @@ namespace Chess
 								std::string move = message.substr(token.size());
 								if (move.back() == '\r')
 									move.pop_back();
-								Boxfish::Move mv = Boxfish::CreateMoveFromString(m_CurrentBoard->GetPosition(), move);
+								Boxfish::Move mv = Boxfish::UCI::CreateMoveFromString(m_CurrentBoard->GetPosition(), move);
 								m_CurrentBoard->Move(mv);
 							}
 						}
@@ -36,7 +36,7 @@ namespace Chess
 			}
 		});
 
-		m_Process.SendCommand("st 1");
+		m_Process.SendCommand("st 3");
 		m_Process.SendCommand("new");
 	}
 

@@ -26,9 +26,11 @@ namespace Chess
 			m_CurrentPlayer->CancelMove();
 	}
 
-	void PlayerManager::AddPlayer(std::unique_ptr<Player>&& player)
+	Player& PlayerManager::AddPlayer(std::unique_ptr<Player>&& player)
 	{
+		Player* p = player.get();
 		m_Players.push_back(std::move(player));
+		return *p;
 	}
 
 	void PlayerManager::GetNextMove(const Boxfish::Position& position)

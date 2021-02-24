@@ -54,9 +54,9 @@ namespace Chess
 		~ChessGame() = default;
 
 		template<typename T, typename ... Args>
-		void AddPlayer(Args&& ... args)
+		T& AddPlayer(Args&& ... args)
 		{
-			m_Players.AddPlayer<T>(std::forward<Args>(args)...);
+			return m_Players.AddPlayer<T>(std::forward<Args>(args)...);
 		}
 
 		void Start();

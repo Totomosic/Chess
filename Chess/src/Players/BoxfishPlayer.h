@@ -16,6 +16,8 @@ namespace Chess
 		BoxfishPlayer(Boxfish::Team team, size_t ttSize = Boxfish::TranspositionTable::TABLE_SIZE);
 		~BoxfishPlayer() override;
 
+		void SetOpeningBook(const Boxfish::OpeningBook* book) const;
+
 		virtual void CancelMove() const override;
 		virtual void PlayNextMove(Board* board) const override;
 	};

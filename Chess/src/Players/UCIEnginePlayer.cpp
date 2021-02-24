@@ -19,9 +19,12 @@ namespace Chess
 						if (message.substr(0, token.size()) == token)
 						{
 							std::string move = message.substr(token.size());
+							size_t space = move.find_first_of(' ');
+							if (space != std::string::npos)
+								move = move.substr(0, space);
 							while (move.back() == '\r')
 								move.pop_back();
-							Boxfish::Move mv = Boxfish::CreateMoveFromString(m_CurrentBoard->GetPosition(), move);
+							Boxfish::Move mv = Boxfish::UCI::CreateMoveFromString(m_CurrentBoard->GetPosition(), move);
 							m_CurrentBoard->Move(mv);
 						}
 					}
@@ -37,6 +40,11 @@ namespace Chess
 		CancelMove();
 	}
 
+	void UCIEnginePlayer::SendCommand(const std::string& command) const
+	{
+		m_Process.SendCommand(command);
+	}
+
 	void UCIEnginePlayer::CancelMove() const
 	{
 		m_Process.SendCommand("stop");
@@ -49,8 +57,10 @@ namespace Chess
 		m_Process.SendCommand(board->GetUCIString());
 		if (m_Limits.MoveTime > 0)
 			m_Process.SendCommand("go movetime " + std::to_string(m_Limits.MoveTime));
-		else
+		else if (m_Limits.Depth > 0)
 			m_Process.SendCommand("go depth " + std::to_string(m_Limits.Depth));
+		else
+			m_Process.SendCommand("go nodes " + std::to_string(m_Limits.Nodes));
 	}
 
 }

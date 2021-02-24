@@ -24,7 +24,7 @@ namespace Chess
 		};
 
 	private:
-		Boxfish::Position m_StartingPosition;
+		std::string m_StartingFen;
 		Boxfish::Position m_Position;
 		std::vector<MoveInfo> m_MoveHistory;
 		int m_MovePointer;

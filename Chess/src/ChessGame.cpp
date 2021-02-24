@@ -21,7 +21,7 @@ namespace Chess
 		m_BoardGraphics.SetSize({ boardSize, boardSize });
 		m_BoardGraphics.SetPosition({ m_Window->Width() / 2.0f, m_Window->Height() / 2.0f, 0.0f });
 
-		m_Analyzer = std::make_unique<BoardAnalyzer>(sceneData.UILayer, &m_BoardGraphics);
+		// m_Analyzer = std::make_unique<BoardAnalyzer>(sceneData.UILayer, &m_BoardGraphics);
 
 		UpdateAllGraphics();
 		SetupEventListeners();
@@ -30,6 +30,8 @@ namespace Chess
 	void ChessGame::Start()
 	{
 		SceneManager::Get().SetCurrentScenePtr(m_SceneData.Scene);
+		//m_Board.SetPositionFromFen("3rr1k1/1pp2p2/1bn2n1p/p1qppb2/6pP/PP1PP1P1/1BPNNPB1/R2Q1K1R w - - 20 35");
+		//m_Board.SetPositionFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/2QQKQ2 w kq - 0 1");
 		m_Board.SetStartingPosition();
 	}
 
